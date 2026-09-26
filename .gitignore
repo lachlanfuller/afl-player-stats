@@ -1,0 +1,9 @@
+# Downloaded source file and generated site data. Both are rebuilt by `python pipeline/refresh.py`.
+data/raw/
+data/build/
+
+__pycache__/
+.pytest_cache/
+.venv/
+node_modules/
+.DS_Store

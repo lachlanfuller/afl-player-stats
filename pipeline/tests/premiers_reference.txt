@@ -1,0 +1,134 @@
+# Premiers by season, used to check the premiership logic in refresh.py.
+# Source: https://en.wikipedia.org/wiki/List_of_VFL/AFL_premiers (fetched 26 Sep 2026).
+# 1897 and 1924 had a round-robin final series and no grand final. 1948, 1977 and 2010 had replays.
+# Club names are as used at the time (Footscray, Kangaroos), matching the data's Playing.for.
+# Add a line here after each grand final.
+1897 Essendon
+1898 Fitzroy
+1899 Fitzroy
+1900 Melbourne
+1901 Essendon
+1902 Collingwood
+1903 Collingwood
+1904 Fitzroy
+1905 Fitzroy
+1906 Carlton
+1907 Carlton
+1908 Carlton
+1909 South Melbourne
+1910 Collingwood
+1911 Essendon
+1912 Essendon
+1913 Fitzroy
+1914 Carlton
+1915 Carlton
+1916 Fitzroy
+1917 Collingwood
+1918 South Melbourne
+1919 Collingwood
+1920 Richmond
+1921 Richmond
+1922 Fitzroy
+1923 Essendon
+1924 Essendon
+1925 Geelong
+1926 Melbourne
+1927 Collingwood
+1928 Collingwood
+1929 Collingwood
+1930 Collingwood
+1931 Geelong
+1932 Richmond
+1933 South Melbourne
+1934 Richmond
+1935 Collingwood
+1936 Collingwood
+1937 Geelong
+1938 Carlton
+1939 Melbourne
+1940 Melbourne
+1941 Melbourne
+1942 Essendon
+1943 Richmond
+1944 Fitzroy
+1945 Carlton
+1946 Essendon
+1947 Carlton
+1948 Melbourne
+1949 Essendon
+1950 Essendon
+1951 Geelong
+1952 Geelong
+1953 Collingwood
+1954 Footscray
+1955 Melbourne
+1956 Melbourne
+1957 Melbourne
+1958 Collingwood
+1959 Melbourne
+1960 Melbourne
+1961 Hawthorn
+1962 Essendon
+1963 Geelong
+1964 Melbourne
+1965 Essendon
+1966 St Kilda
+1967 Richmond
+1968 Carlton
+1969 Richmond
+1970 Carlton
+1971 Hawthorn
+1972 Carlton
+1973 Richmond
+1974 Richmond
+1975 North Melbourne
+1976 Hawthorn
+1977 North Melbourne
+1978 Hawthorn
+1979 Carlton
+1980 Richmond
+1981 Carlton
+1982 Carlton
+1983 Hawthorn
+1984 Essendon
+1985 Essendon
+1986 Hawthorn
+1987 Carlton
+1988 Hawthorn
+1989 Hawthorn
+1990 Collingwood
+1991 Hawthorn
+1992 West Coast
+1993 Essendon
+1994 West Coast
+1995 Carlton
+1996 North Melbourne
+1997 Adelaide
+1998 Adelaide
+1999 Kangaroos
+2000 Essendon
+2001 Brisbane Lions
+2002 Brisbane Lions
+2003 Brisbane Lions
+2004 Port Adelaide
+2005 Sydney
+2006 West Coast
+2007 Geelong
+2008 Hawthorn
+2009 Geelong
+2010 Collingwood
+2011 Geelong
+2012 Sydney
+2013 Hawthorn
+2014 Hawthorn
+2015 Hawthorn
+2016 Western Bulldogs
+2017 Richmond
+2018 West Coast
+2019 Richmond
+2020 Richmond
+2021 Melbourne
+2022 Geelong
+2023 Collingwood
+2024 Brisbane Lions
+2025 Brisbane Lions
