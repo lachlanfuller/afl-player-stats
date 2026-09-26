@@ -8,7 +8,7 @@ function valueOf(row, column, type) {
   return type === "number" ? Number(raw) : raw.toLowerCase();
 }
 
-function makeSortable(table) {
+export function makeSortable(table) {
   const body = table.tBodies[0];
   const headings = [...table.tHead.rows[0].cells];
   [...body.rows].forEach((row, i) => (row.dataset.order = String(i)));

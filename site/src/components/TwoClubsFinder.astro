@@ -1,0 +1,32 @@
+---
+import { loadFranchises } from "../lib/data.js";
+import { url } from "../lib/paths.js";
+
+const franchises = [...loadFranchises()].sort((a, b) => a.name.localeCompare(b.name));
+---
+
+<div class="two-clubs" data-two-clubs data-base={url()}>
+  <div class="two-clubs-pickers">
+    <div class="two-clubs-field">
+      <label for="two-clubs-a">First club</label>
+      <select id="two-clubs-a">
+        <option value="">Choose a club</option>
+        {franchises.map((f) => <option value={f.id}>{f.name}</option>)}
+      </select>
+    </div>
+    <div class="two-clubs-field">
+      <label for="two-clubs-b">Second club</label>
+      <select id="two-clubs-b">
+        <option value="">Choose a club</option>
+        {franchises.map((f) => <option value={f.id}>{f.name}</option>)}
+      </select>
+    </div>
+  </div>
+  <p class="two-clubs-status" role="status" aria-live="polite">Choose two clubs to see who has played for both.</p>
+  <div class="two-clubs-result" role="region" aria-label="Players who played for both clubs" tabindex="0"></div>
+  <noscript><p class="two-clubs-status">This needs JavaScript.</p></noscript>
+</div>
+
+<script>
+  import "../scripts/two-clubs-finder.js";
+</script>

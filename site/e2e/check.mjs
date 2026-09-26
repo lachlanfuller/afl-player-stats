@@ -210,6 +210,13 @@ const text = async (page, sel) => (await page.locator(sel).first().innerText()).
   await page.screenshot({ path: `${SHOTS}/player-mobile.png`, fullPage: true });
   const tableScrolls = await page.locator("#seasons-heading ~ .table-wrap").evaluate((el) => el.scrollWidth >= el.clientWidth);
   check("mobile: wide tables scroll inside their own box", tableScrolls);
+  await page.goto(BASE + "/two-clubs/");
+  await page.selectOption("#two-clubs-a", "geelong");
+  await page.selectOption("#two-clubs-b", "gold-coast");
+  await page.locator(".two-clubs-result tbody tr").first().waitFor();
+  const noScrollTwoClubs = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
+  check("mobile: two-clubs page has no sideways page scroll", noScrollTwoClubs);
+  await page.screenshot({ path: `${SHOTS}/two-clubs-mobile.png`, fullPage: true });
   await page.close();
 }
 
@@ -242,14 +249,54 @@ const text = async (page, sel) => (await page.locator(sel).first().innerText()).
   await page.close();
 }
 
-// ============ 7. Accessibility scan (axe) in light and dark ============
+// ============ 7. Played for two clubs ============
+{
+  const page = await newPage();
+  await page.goto(BASE + "/");
+  await page.getByRole("link", { name: "Played for two clubs" }).click();
+  await page.waitForURL("**/two-clubs/");
+  check("two clubs: nav link opens the page", (await text(page, "h1")) === "Played for two clubs");
+  check("two clubs: status prompts before any club is chosen", (await text(page, ".two-clubs-status")) === "Choose two clubs to see who has played for both.");
+
+  await page.selectOption("#two-clubs-a", "geelong");
+  check("two clubs: one club chosen is not enough", (await text(page, ".two-clubs-status")) === "Choose two clubs to see who has played for both.");
+  await page.selectOption("#two-clubs-b", "gold-coast");
+  await page.waitForFunction(() => document.querySelector(".two-clubs-status")?.textContent.includes("played for both"));
+  const status = await text(page, ".two-clubs-status");
+  check("two clubs: status names both clubs and a plausible count", /^\d+ players have played for both Geelong and Gold Coast\.$/.test(status), status);
+
+  const rows = async () => page.locator(".two-clubs-result tbody tr").evaluateAll((rs) => rs.map((r) => r.cells[0].innerText));
+  const before = await rows();
+  check("two clubs: Gary Ablett heads the Geelong/Gold Coast list", before[0] === "Gary Ablett", before.slice(0, 3).join(", "));
+  const firstLink = await page.locator(".two-clubs-result tbody tr").first().locator("a").getAttribute("href");
+  check("two clubs: player name links to their page", firstLink === "/players/1105/", firstLink);
+  await page.screenshot({ path: `${SHOTS}/two-clubs-light.png` });
+
+  await page.locator(".two-clubs-result th", { hasText: "Player" }).getByRole("button").click();
+  const after = await rows();
+  check("two clubs: click 'Player' sorts A to Z", after.every((r, i) => i === 0 || after[i - 1].localeCompare(r) <= 0), after.slice(0, 3).join(", "));
+  check("two clubs: sorting does not change who is listed", new Set(after).size === new Set(before).size && after.every((n) => before.includes(n)));
+
+  await page.selectOption("#two-clubs-b", "geelong");
+  check("two clubs: choosing the same club twice asks for two different clubs", (await text(page, ".two-clubs-status")) === "Choose two different clubs.");
+  check("two clubs: the table is cleared once clubs match", (await page.locator(".two-clubs-result table").count()) === 0);
+  check("two clubs: no console errors or failed requests", page.problems.length === 0, page.problems.join(" | "));
+  await page.close();
+}
+
+// ============ 8. Accessibility scan (axe) in light and dark ============
 for (const dark of [false, true]) {
-  for (const url of ["/", "/players/1105/", "/about/"]) {
+  for (const url of ["/", "/players/1105/", "/about/", "/two-clubs/"]) {
     const page = await newPage({ dark });
     await page.goto(BASE + url);
     if (url === "/") {
       const i = page.getByRole("combobox", { name: "Search players" });
       await i.pressSequentially("ablett"); await page.locator(".search-list a").first().waitFor();
+    }
+    if (url === "/two-clubs/") {
+      await page.selectOption("#two-clubs-a", "geelong");
+      await page.selectOption("#two-clubs-b", "gold-coast");
+      await page.locator(".two-clubs-result tbody tr").first().waitFor();
     }
     await page.addScriptTag({ path: axePath });
     const r = await page.evaluate(() => axe.run(document, { runOnly: ["wcag2a", "wcag2aa", "wcag21aa", "best-practice"] }));

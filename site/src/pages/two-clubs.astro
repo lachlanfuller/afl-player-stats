@@ -1,0 +1,15 @@
+---
+import TwoClubsFinder from "../components/TwoClubsFinder.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Played for two clubs"
+  description="Pick any two AFL or VFL clubs and see every player who has played at least one game for both."
+>
+  <header class="page-head">
+    <h1>Played for two clubs</h1>
+    <p>Pick two clubs to see everyone who has played at least one game for both.</p>
+  </header>
+  <TwoClubsFinder />
+</BaseLayout>
