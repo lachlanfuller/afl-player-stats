@@ -1,7 +1,7 @@
 import { defineConfig } from "astro/config";
 
-// Hosting is not decided yet. Set SITE_BASE (for example "/afl-player-stats/" on GitHub Pages)
-// and SITE_URL when building for a host that serves the site from a sub-path.
+// Deployed to GitHub Pages by .github/workflows/deploy.yml, which sets SITE_BASE and SITE_URL
+// for that sub-path. Building locally without them serves from the root, as npm run dev does.
 export default defineConfig({
   site: process.env.SITE_URL || undefined,
   base: process.env.SITE_BASE || "/",

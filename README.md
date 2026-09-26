@@ -37,6 +37,13 @@ The build makes one page per player (13,000+), the home page with search, and an
 
 To serve from a sub-path (GitHub Pages project sites, for example), build with `SITE_BASE=/afl-player-stats/`.
 
+## Deploying
+
+Live at [lachlanfuller.github.io/afl-player-stats](https://lachlanfuller.github.io/afl-player-stats/). Every push to `main`
+runs `.github/workflows/deploy.yml`: it refreshes the data, builds the site, and publishes it to GitHub Pages. To publish a
+manual data refresh without any code changes, push a commit (an empty one works) or run the workflow by hand from the
+Actions tab.
+
 ## Tests
 
 Data pipeline:
