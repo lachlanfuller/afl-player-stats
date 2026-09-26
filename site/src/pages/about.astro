@@ -1,0 +1,61 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { loadMeta } from "../lib/data.js";
+import { fmt, longDate, span } from "../lib/format.js";
+
+const meta = loadMeta();
+
+const { droppedNoPlayerId, droppedDuplicates } = meta.rows;
+const leftOut =
+  `${fmt(droppedNoPlayerId)} rows in the source file have no player identified, so they cannot be counted for anyone.` +
+  (droppedDuplicates ? ` ${fmt(droppedDuplicates)} exact duplicate rows were also removed.` : "");
+---
+
+<BaseLayout
+  title="About the data"
+  description="Where the numbers come from and how wins, finals, premierships and clubs are worked out."
+>
+  <div class="prose">
+    <h1>About the data</h1>
+
+    <h2>Where it comes from</h2>
+    <p>
+      Every figure comes from one file: player-by-player match statistics for {fmt(meta.players)} players
+      ({span(meta.firstSeason, meta.lastSeason)}), collected from <a href="https://afltables.com">AFL Tables</a> and
+      published by the <a href="https://github.com/jimmyday12/fitzRoy">fitzRoy</a> project. The site is refreshed by hand
+      after new games are added. It currently includes games up to {longDate(meta.sourceLastGame)}. This site is not
+      affiliated with the AFL.
+    </p>
+
+    <h2 id="method">How the numbers are worked out</h2>
+    <ul>
+      <li><strong>Games and goals</strong> are counted from each match a player took part in.</li>
+      <li>
+        <strong>Wins, losses and draws</strong> compare the two final scores in each match, from the player's side. A draw
+        is shown separately, not as a loss.
+      </li>
+      <li>
+        <strong>Finals</strong> are matches in a finals round: qualifying, elimination, semi, preliminary, wildcard and
+        grand finals.
+      </li>
+      <li>
+        <strong>Premierships</strong> are counted for players in the winning side of the deciding grand final. Three
+        seasons had a grand final replay (1948, 1977 and 2010), and the replay decides. In 1897 and 1924 there was a
+        round-robin final series and no grand final, so players from that season's premier (Essendon both times) who played
+        at least one final are counted. Players who were in the squad but did not play are not counted.
+      </li>
+      <li>
+        <strong>Clubs</strong> that changed names are grouped as one: South Melbourne with Sydney, Footscray with the
+        Western Bulldogs, the Kangaroos with North Melbourne, and the Brisbane Bears with the Brisbane Lions. Fitzroy and
+        University are separate clubs. Each player's page also shows the name their club used at the time.
+      </li>
+      <li>
+        <strong>Players with the same name</strong> are separate players. Search results show each player's seasons and
+        clubs so they can be told apart.
+      </li>
+    </ul>
+
+    <h2>What is left out</h2>
+    <p>{leftOut}</p>
+  </div>
+</BaseLayout>

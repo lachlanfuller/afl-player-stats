@@ -1,0 +1,55 @@
+---
+import "../styles/global.css";
+import SearchBox from "../components/SearchBox.astro";
+import { loadMeta } from "../lib/data.js";
+import { longDate } from "../lib/format.js";
+import { url } from "../lib/paths.js";
+
+const { title, description, showSearch = true } = Astro.props;
+const meta = loadMeta();
+const fullTitle = title ? `${title} · AFL Player Stats` : "AFL Player Stats";
+
+// A plain footy-shaped mark for the browser tab, drawn inline so there is no extra file to load.
+const icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><ellipse cx="16" cy="16" rx="14" ry="8.5" transform="rotate(-35 16 16)" fill="#1d4ed8"/><path d="M9.5 21.5 22.5 10.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+---
+
+<!doctype html>
+<html lang="en-AU">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="icon" href={`data:image/svg+xml,${encodeURIComponent(icon)}`} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="bar">
+        <a class="brand" href={url()}>AFL Player Stats</a>
+        {showSearch && <SearchBox variant="compact" id="header-search" />}
+        <nav class="site-nav" aria-label="Main">
+          <a href={url("about/")}>About the data</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="bar">
+        <p>Includes games up to {longDate(meta.sourceLastGame)}.</p>
+        <p>
+          Data from <a href="https://github.com/jimmyday12/fitzRoy">fitzRoy</a> and <a href="https://afltables.com">AFL Tables</a>.
+          Not affiliated with the AFL. <a href={url("about/")}>How the numbers are worked out</a>.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      import "../scripts/sortable.js";
+    </script>
+  </body>
+</html>

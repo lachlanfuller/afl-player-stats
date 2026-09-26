@@ -2,6 +2,12 @@
 data/raw/
 data/build/
 
+# The site: built pages, copied data, Astro's cache, browser-check screenshots
+site/dist/
+site/public/data/
+site/.astro/
+site/e2e-output/
+
 __pycache__/
 .pytest_cache/
 .venv/

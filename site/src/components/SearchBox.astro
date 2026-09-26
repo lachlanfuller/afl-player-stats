@@ -1,0 +1,30 @@
+---
+import { url } from "../lib/paths.js";
+
+// variant "hero" is the large box on the home page; "compact" is the one in the header.
+const { variant = "hero", id = "player-search" } = Astro.props;
+---
+
+<div class={`search search-${variant}`} data-search data-base={url()}>
+  <label class="visually-hidden" for={`${id}-input`}>Search players</label>
+  <input
+    id={`${id}-input`}
+    type="search"
+    role="combobox"
+    aria-autocomplete="list"
+    aria-expanded="false"
+    aria-controls={`${id}-list`}
+    autocomplete="off"
+    autocapitalize="off"
+    spellcheck="false"
+    enterkeyhint="go"
+    placeholder={variant === "hero" ? "Search by name, for example Ablett" : "Search players"}
+  />
+  <ul id={`${id}-list`} class="search-list" role="listbox" aria-label="Matching players" hidden></ul>
+  <p class="search-status" role="status" aria-live="polite"></p>
+  <noscript><p class="search-status">Player search needs JavaScript.</p></noscript>
+</div>
+
+<script>
+  import "../scripts/search-box.js";
+</script>

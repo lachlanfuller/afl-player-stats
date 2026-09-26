@@ -1,0 +1,187 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { loadFranchises, loadIndex, loadPlayer, namesakesOf } from "../../lib/data.js";
+import { fmt, joinAnd, percent, plural, record, span } from "../../lib/format.js";
+import { url } from "../../lib/paths.js";
+
+export function getStaticPaths() {
+  return loadIndex().map((p) => ({ params: { id: String(p.id) } }));
+}
+
+const player = loadPlayer(Astro.params.id);
+const { career, finals } = player;
+
+const franchiseName = Object.fromEntries(loadFranchises().map((f) => [f.id, f.name]));
+const clubNames = player.clubs.map((c) => c.name);
+const careerSpan = span(player.firstSeason, player.lastSeason);
+const seasonCount = new Set(player.seasons.map((s) => s.season)).size;
+const premiershipYears = player.premierships.map((p) => p.season);
+
+const finalsDetail = finals.games
+  ? [plural(finals.wins, "win"), plural(finals.losses, "loss", "losses"), finals.draws ? plural(finals.draws, "draw") : null]
+      .filter(Boolean)
+      .join(", ")
+  : "Never played in a final";
+
+const namesakes = namesakesOf(player)
+  .sort((a, b) => b.games - a.games)
+  .map((p) => ({ ...p, clubNames: Object.keys(p.clubs).map((id) => franchiseName[id]) }));
+
+const playedAs = (club) => (club.playedAs.length === 1 && club.playedAs[0] === club.name ? null : club.playedAs.join(", "));
+
+const description =
+  `${player.name} (${careerSpan}) played ${plural(career.games, "game")} and kicked ${plural(career.goals, "goal")} ` +
+  `for ${joinAnd(clubNames)}. Win–loss record ${record(career.wins, career.losses, career.draws)}, ` +
+  `${plural(finals.games, "final")} and ${plural(premiershipYears.length, "premiership")}.`;
+---
+
+<BaseLayout title={`${player.name} (${careerSpan})`} description={description}>
+  <header class="player-head">
+    <h1>{player.name}</h1>
+    <p class="player-meta">{careerSpan} · {joinAnd(clubNames)}</p>
+
+    {
+      namesakes.length > 0 && (
+        <div class="namesakes">
+          {namesakes.length === 1 ? "Another player has the same name:" : "Other players have the same name:"}
+          <ul>
+            {namesakes.map((p) => (
+              <li>
+                <a href={url(`players/${p.id}/`)}>{p.name}</a> · {span(p.first, p.last)} · {joinAnd(p.clubNames)}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+  </header>
+
+  <dl class="tiles">
+    <div class="tile">
+      <dt>Games</dt>
+      <dd class="value">{fmt(career.games)}</dd>
+      <dd class="sub">{plural(seasonCount, "season")}</dd>
+    </div>
+    <div class="tile">
+      <dt>Goals</dt>
+      <dd class="value">{fmt(career.goals)}</dd>
+      <dd class="sub">{(career.goals / career.games).toFixed(1)} per game</dd>
+    </div>
+    <div class="tile wide">
+      <dt>Win–loss–draw</dt>
+      <dd class="value">{record(career.wins, career.losses, career.draws)}</dd>
+      <dd class="sub">{percent(career.wins, career.games)} wins</dd>
+    </div>
+    <div class="tile">
+      <dt>Finals played</dt>
+      <dd class="value">{fmt(finals.games)}</dd>
+      <dd class="sub">{finalsDetail}</dd>
+    </div>
+    <div class="tile">
+      <dt>Premierships</dt>
+      <dd class="value">{premiershipYears.length}</dd>
+      <dd class="sub">{premiershipYears.length ? premiershipYears.join(", ") : "None"}</dd>
+    </div>
+  </dl>
+  <p class="note">
+    Premierships are counted for players in the winning side of the deciding grand final.{" "}
+    <a href={url("about/#method")}>How the numbers are worked out</a>.
+  </p>
+
+  <section class="block">
+    <h2 id="clubs-heading">Clubs played for</h2>
+    <div class="table-wrap" role="region" aria-labelledby="clubs-heading" tabindex="0">
+      <table data-sortable>
+        <thead>
+          <tr>
+            <th scope="col" data-sort="text">Club</th>
+            <th scope="col" data-sort="number">Seasons</th>
+            <th scope="col" class="num" data-sort="number">Games</th>
+            <th scope="col" class="num" data-sort="number">Goals</th>
+            <th scope="col" class="num" data-sort="number">W–L–D</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            player.clubs.map((c) => (
+              <tr>
+                <td data-value={c.name}>
+                  {c.name}
+                  {playedAs(c) && <small>played as {playedAs(c)}</small>}
+                </td>
+                <td data-value={c.firstSeason}>{span(c.firstSeason, c.lastSeason)}</td>
+                <td class="num">{fmt(c.games)}</td>
+                <td class="num">{fmt(c.goals)}</td>
+                <td class="num" data-value={c.wins}>{record(c.wins, c.losses, c.draws)}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2 id="opponents-heading">Clubs played against</h2>
+    <div class="table-wrap" role="region" aria-labelledby="opponents-heading" tabindex="0">
+      <table data-sortable>
+        <thead>
+          <tr>
+            <th scope="col" data-sort="text">Opponent</th>
+            <th scope="col" class="num" data-sort="number">Games</th>
+            <th scope="col" class="num" data-sort="number">Goals</th>
+            <th scope="col" class="num" data-sort="number">W–L–D</th>
+            <th scope="col" class="num" data-sort="number">Win rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            player.opponents.map((o) => (
+              <tr>
+                <td>{o.name}</td>
+                <td class="num">{fmt(o.games)}</td>
+                <td class="num">{fmt(o.goals)}</td>
+                <td class="num" data-value={o.wins}>{record(o.wins, o.losses, o.draws)}</td>
+                <td class="num" data-value={o.wins / o.games}>{percent(o.wins, o.games)}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2 id="seasons-heading">Season by season</h2>
+    <div class="table-wrap" role="region" aria-labelledby="seasons-heading" tabindex="0">
+      <table data-sortable>
+        <thead>
+          <tr>
+            <th scope="col" data-sort="number">Season</th>
+            <th scope="col" data-sort="text">Club</th>
+            <th scope="col" class="num" data-sort="number">Games</th>
+            <th scope="col" class="num" data-sort="number">Goals</th>
+            <th scope="col" class="num" data-sort="number">W–L–D</th>
+            <th scope="col" class="num" data-sort="number">Finals</th>
+            <th scope="col" data-sort="number">Premiership</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            player.seasons.map((s) => (
+              <tr>
+                <td>{s.season}</td>
+                <td>{s.club}</td>
+                <td class="num">{fmt(s.games)}</td>
+                <td class="num">{fmt(s.goals)}</td>
+                <td class="num" data-value={s.wins}>{record(s.wins, s.losses, s.draws)}</td>
+                <td class="num">{s.finalsGames || "–"}</td>
+                <td data-value={s.premiership ? 1 : 0}>{s.premiership && <span class="pill">Premiers</span>}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</BaseLayout>

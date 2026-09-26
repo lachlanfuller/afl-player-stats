@@ -22,7 +22,24 @@ fitzRoy updates on Tuesday mornings (AEST) after each round. The plan for the MV
 
 If the source data stops matching an assumption the script relies on (an unfamiliar round label, a club with two franchise labels, a game with no score), the refresh stops with a plain message instead of building wrong numbers.
 
+## The site
+
+An [Astro](https://astro.build) site in `site/` that reads the refresh output. It needs Node 22.12 or newer. Run the refresh first (above), then:
+
+```
+cd site
+npm install
+npm run dev        # local preview with live reload
+npm run build      # builds every page into site/dist/ (about 25 seconds)
+```
+
+The build makes one page per player (13,000+), the home page with search, and an About page. Player search runs in the browser against a small index (0.2 MB compressed) that loads the first time the search box is used.
+
+To serve from a sub-path (GitHub Pages project sites, for example), build with `SITE_BASE=/afl-player-stats/`.
+
 ## Tests
+
+Data pipeline:
 
 ```
 python -m pytest pipeline/tests
@@ -31,6 +48,16 @@ python -m pytest pipeline/tests
 The tests rebuild everything and check it against the source file with separate queries: row counts reconcile, every player's record adds up, one player's full record (Gary Ablett, ID 1105) is fixed, the premier of every season from 1897 to 2025 matches a published list (`pipeline/tests/premiers_reference.txt`), and the two-team query matches a direct query on the source.
 
 After each grand final, add the season's premier to `premiers_reference.txt`.
+
+Site:
+
+```
+cd site
+npm test                 # search ranking and formatting
+npm run build && npm run e2e
+```
+
+`npm run e2e` opens the built site in Chromium and checks search (including keyboard use), the numbers on a known player's page, table sorting, the mobile layout, dark mode and accessibility (axe). Run `npx playwright install chromium` once first, or set `CHROMIUM_PATH` to an existing Chromium. Screenshots go to `site/e2e-output/`.
 
 ## What the refresh writes (`data/build/`)
 

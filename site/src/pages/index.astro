@@ -1,0 +1,25 @@
+---
+import SearchBox from "../components/SearchBox.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { loadMeta } from "../lib/data.js";
+import { fmt, span } from "../lib/format.js";
+
+const meta = loadMeta();
+---
+
+<BaseLayout
+  showSearch={false}
+  description="Look up any VFL or AFL player since 1897: games, goals, clubs played for and against, win-loss record, finals record and premierships."
+>
+  <section class="hero">
+    <h1>AFL player stats</h1>
+    <p class="lead">
+      Every VFL and AFL player since 1897. Look up games, goals, clubs, win–loss record, finals and premierships.
+    </p>
+    <SearchBox variant="hero" id="home-search" />
+    <ul class="facts">
+      <li><strong>{fmt(meta.players)}</strong> players</li>
+      <li>Seasons <strong>{span(meta.firstSeason, meta.lastSeason)}</strong></li>
+    </ul>
+  </section>
+</BaseLayout>
